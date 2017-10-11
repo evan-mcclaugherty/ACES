@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "dev": "DEBUG=ACES nodemon ./bin/www",
-    "now-start": "node ./bin/www"
+    "start": "node ./bin/www"
   },
   "dependencies": {
     "body-parser": "~1.18.2",
