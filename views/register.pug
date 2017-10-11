@@ -1,0 +1,28 @@
+extends layout
+block content
+    h1 Register Yo'self
+    form(action="/register" method="post")
+        fieldset
+            legend Create a User Profile        
+            p
+                label(for="name") Real Name
+                input(type="text" id="name" name= "user[name]" required value="Fake Name")
+            p
+                label(for="password") Password
+                input(type="password" id="password" name= "user[password]" required value="fake password")
+            p
+                label(for="password2") Verify Password
+                input(type="password" id="password2" name= "user[password2]" required value="fake password")
+            p
+                label(for="location") Select Location
+                select(name="user[location]")
+                    option(value="Aurora, CO") Aurora, CO
+                    option(value="Richardson, TX") Richardson, TX
+            p
+                label(for="extension") Office Extension
+                input(type="text" id="extension" name= "user[extension]" required value="5273")
+            p
+                label(for="photo") Take a Selfie!
+                input(type="file", name="user[photo]" accept="image/*" capture="camera")
+            p
+                input(type="submit" value="Submit")

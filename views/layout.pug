@@ -1,0 +1,22 @@
+doctype html
+html
+  head
+    title Aces Game Hub
+    meta(charset="UTF-8")
+    meta(name="viewport" content="width=device-width, initial-scale=1.0")
+    meta(http-equiv="X-UA-Compatible" content="ie=edge")
+    link(rel='stylesheet', href='/stylesheets/style.css')
+  body
+    nav
+      a(href="/") 
+        h1 Aces Game Hub
+      div.login
+        if locals.user
+          a(href="/startGame") Start Game
+          a(href="/logout") Logout
+        else
+          a(href="/register") Register
+          a(href="/login") Login
+    main
+      block content
+    footer
