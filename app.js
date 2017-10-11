@@ -6,6 +6,10 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var sassMiddleware = require('node-sass-middleware');
 
+process.on('uncaughtException', function(e) {
+    console.log('--- CAUGHT BY EVENT ---');
+    console.log(e);
+});
 var index = require('./routes/index');
 var register = require('./routes/register');
 var users = require('./routes/users');
