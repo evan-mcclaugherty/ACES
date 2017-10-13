@@ -7,16 +7,16 @@ block content
             include messages.pug
             p
                 label(for="username")
-                input(type="text" id="username" name= "user[username]" required placeholder="username" value="username")
+                input(type="text" id="username" name="user[username]" required placeholder="username" value="username")
             p 
                 label(for="name")
-                input(type="text" id="name" name= "user[name]" required value="firstand LastName" placeholder="firstand lastname")
+                input(type="text" id="name" name="user[name]" required value="firstand LastName" placeholder="firstand lastname")
             p
                 label(for="password")
                 input(type="password" id="password" name= "user[password]" required value="fake password" placeholder="password")
             p
                 label(for="password2")
-                input(type="password" id="password2" name= "user[password2]" required value="fake password" pverify password")
+                input(type="password" id="password2" name= "user[password2]" required value="fake password" placeholder="verify password")
             p
                 label(for="location") Select Location
                 select(name="user[location]")

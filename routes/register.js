@@ -42,17 +42,17 @@ exports.submit = (req, res, next) => {
         }
     });
     if (errors.isEmpty()) {
-        const userInfo = req.body.user;
+        let userInfo = req.body.user;
         user.verify(userInfo.username, (err, result) => {
             if (result.length > 0) {
                 res.locals.error("username already exists!");
                 res.redirect('back');
             } else {
                 user.create(userInfo, (err, result) => {
-                    console.log(result);
+                    req.session.username = userInfo.username;
+                    userInfo = {};
+                    res.redirect('/');
                 });
-                req.session.uid = userInfo.username;
-                res.redirect('/');
             }
         })
     } else {

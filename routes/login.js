@@ -1,20 +1,24 @@
 const user = require('../models/user');
+const debug = require('debug')('path');
 const {
-  body,
-  validationResult
+    body,
+    validationResult
 } = require('express-validator/check');
 const {
-  sanitizeBody,
-  matchedData,
+    sanitizeBody,
+    matchedData,
 } = require('express-validator/filter')
 
 exports.form = (req, res) => {
-  res.render('login', {
-    title: "Log In"
-  });
+    res.render('login', {
+        title: "Log In"
+    });
 }
 
-exports.validate = [];
+exports.validate = [
+    body('user[username]').exists().escape().trim().withMessage("username required"),
+    body('user[password').exists().escape().withMessage('password required')
+];
 
 exports.submit = (req, res, next) => {
     const errors = validationResult(req).formatWith((error) => {
@@ -26,15 +30,20 @@ exports.submit = (req, res, next) => {
     if (errors.isEmpty()) {
         const userInfo = req.body.user;
         user.verify(userInfo.username, (err, result) => {
-            if (result.length > 0) {
-                res.locals.error("username already exists!");
-                res.redirect('back');
+            if (result.length === 1) {
+                result = result[0].n.properties;
+                user.authenticate(result.password, userInfo.password, result.salt, (err, isAuth) => {
+                    if (isAuth) {
+                        req.session.username = userInfo.username;
+                        res.redirect('/');
+                    } else {
+                        res.locals.error("Password is incorrect");
+                        res.redirect('back');
+                    }
+                })
             } else {
-                user.create(userInfo, (err, result) => {
-                    console.log(result);
-                });
-                req.session.uid = userInfo.username;
-                res.redirect('/');
+                res.locals.error("Either username doesn't exist or password is wrong!");
+                res.redirect('back');
             }
         })
     } else {
@@ -46,3 +55,13 @@ exports.submit = (req, res, next) => {
         res.redirect('back');
     }
 };
+
+exports.logout = (req, res, next) => {
+    req.session.destroy((err) => {
+        if (err) {
+            throw err;
+        } else {
+            res.redirect('/');
+        }
+    })
+}

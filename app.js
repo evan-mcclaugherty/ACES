@@ -8,11 +8,12 @@ var bodyParser = require('body-parser');
 var sassMiddleware = require('node-sass-middleware');
 
 var messages = require('./middleware/messages');
+var userMiddleware = require('./middleware/user');
 
 process.on('uncaughtException', function (e) {
-  console.log('--- CAUGHT BY EVENT ---');
   console.log(e);
 });
+
 var index = require('./routes/index');
 var register = require('./routes/register');
 var login = require('./routes/login');
@@ -46,12 +47,15 @@ app.use(sassMiddleware({
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(messages());
+app.use(userMiddleware());
 
 app.get('/', index);
 app.get('/register', register.form);
 app.post('/register', register.validate, register.submit);
 app.get('/login', login.form);
 app.post('/login', login.validate, login.submit);
+app.get('/logout', login.logout);
+
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
