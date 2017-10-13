@@ -1,0 +1,14 @@
+extends layout
+block content
+    h1 Login!
+    form(action="/login" method="post")
+        fieldset
+            include messages.pug
+            p
+                label(for="username")
+                input(type="text" id="username" name= "user[username]" required placeholder="username" value="username")
+            p
+                label(for="password")
+                input(type="password" id="password" name= "user[password]" required value="fake password" placeholder="password")
+          p
+                input(type="submit" value="Submit")

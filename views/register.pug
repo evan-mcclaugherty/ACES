@@ -4,23 +4,27 @@ block content
     form(action="/register" method="post")
         fieldset
             legend Create a User Profile        
+            include messages.pug
             p
-                label(for="name") Real Name
-                input(type="text" id="name" name= "user[name]" required value="Fake Name")
+                label(for="username")
+                input(type="text" id="username" name= "user[username]" required placeholder="username" value="username")
+            p 
+                label(for="name")
+                input(type="text" id="name" name= "user[name]" required value="firstand LastName" placeholder="firstand lastname")
             p
-                label(for="password") Password
-                input(type="password" id="password" name= "user[password]" required value="fake password")
+                label(for="password")
+                input(type="password" id="password" name= "user[password]" required value="fake password" placeholder="password")
             p
-                label(for="password2") Verify Password
-                input(type="password" id="password2" name= "user[password2]" required value="fake password")
+                label(for="password2")
+                input(type="password" id="password2" name= "user[password2]" required value="fake password" pverify password")
             p
                 label(for="location") Select Location
                 select(name="user[location]")
                     option(value="Aurora, CO") Aurora, CO
                     option(value="Richardson, TX") Richardson, TX
             p
-                label(for="extension") Office Extension
-                input(type="text" id="extension" name= "user[extension]" required value="5273")
+                label(for="extension")
+                input(type="text" id="extension" name= "user[extension]" required value="5273" placeholder="4 digit ext.")
             p
                 label(for="photo") Take a Selfie!
                 input(type="file", name="user[photo]" accept="image/*" capture="camera")

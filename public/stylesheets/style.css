@@ -358,6 +358,9 @@ main {
       text-align: center;
       flex-basis: 50%; }
 
+.error {
+  color: red; }
+
 body {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
