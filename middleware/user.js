@@ -15,7 +15,8 @@ module.exports = () => {
             username: props.username,
             name: props.name,
             photo: props.photo,
-            extension: props.extension
+            extension: props.extension,
+            location: props.location
           }
           req.user = res.locals.user = user;
           next();

@@ -1,14 +1,16 @@
+require('dotenv').config()
 var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
-var session = require('express-session');
+var cookieSession = require('cookie-session');
 var bodyParser = require('body-parser');
 var sassMiddleware = require('node-sass-middleware');
 
 var messages = require('./middleware/messages');
 var userMiddleware = require('./middleware/user');
+var auth = require('./middleware/auth');
 
 process.on('uncaughtException', function (e) {
   console.log(e);
@@ -18,6 +20,9 @@ var index = require('./routes/index');
 var register = require('./routes/register');
 var login = require('./routes/login');
 var users = require('./routes/users');
+var games = require('./routes/games');
+var chat = require('./routes/chat');
+var profile = require('./routes/profile');
 
 var app = express();
 
@@ -33,11 +38,16 @@ app.use(bodyParser.urlencoded({
   extended: true
 }));
 app.use(cookieParser());
-app.use(session({
-  secret: 'secret',
-  resave: false,
-  saveUninitialized: true
-}));
+
+app.use(cookieSession({
+  name: 'session',
+  keys: [process.env.ONE + '', process.env.TWO + '', process.env.THREE + ''],
+  maxAge: 5 * 24 * 60 * 60 * 1000,
+  sameSite: 'strict',
+  // secure: true, ENABLE LATER
+  // domain: www..... SET LATER
+}))
+
 app.use(sassMiddleware({
   src: path.join(__dirname, 'public'),
   dest: path.join(__dirname, 'public'),
@@ -56,6 +66,14 @@ app.get('/login', login.form);
 app.post('/login', login.validate, login.submit);
 app.get('/logout', login.logout);
 
+//auth routes
+app.use(auth());
+app.get('/games', games.get);
+app.get('/addGame', games.getaddGame);
+app.post('/addGame', games.validate, games.postAddGame);
+
+app.get('/profile', profile.get);
+app.get('/chat', chat.get);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

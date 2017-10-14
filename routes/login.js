@@ -30,6 +30,11 @@ exports.submit = (req, res, next) => {
     if (errors.isEmpty()) {
         const userInfo = req.body.user;
         user.verify(userInfo.username, (err, result) => {
+            if (result === undefined) {
+                res.render('error', {
+                    message: "Neo4j server is down, please contact admin (Evan)"
+                });
+            }
             if (result.length === 1) {
                 result = result[0].n.properties;
                 user.authenticate(result.password, userInfo.password, result.salt, (err, isAuth) => {
@@ -57,11 +62,6 @@ exports.submit = (req, res, next) => {
 };
 
 exports.logout = (req, res, next) => {
-    req.session.destroy((err) => {
-        if (err) {
-            throw err;
-        } else {
-            res.redirect('/');
-        }
-    })
+    req.session.username = null;
+    res.redirect('/');
 }

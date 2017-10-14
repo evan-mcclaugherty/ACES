@@ -1,4 +1,5 @@
 const user = require('../models/user');
+require('dotenv').config()
 const {
     body,
     validationResult
@@ -16,7 +17,7 @@ exports.form = (req, res) => {
 exports.validate = [
     body('user[username]').exists().escape().trim(),
 
-    body('user[name]').exists().escape().trim().custom(value => value.match(/\w+\s\w+/)).withMessage("First and Last separated by a space."),
+    body('user[name]').exists().escape().trim().matches(/\w+\s\w+/).withMessage("First and Last separated by a space."),
 
     body('user[password').exists().isLength({
         min: 5
@@ -44,8 +45,12 @@ exports.submit = (req, res, next) => {
     if (errors.isEmpty()) {
         let userInfo = req.body.user;
         user.verify(userInfo.username, (err, result) => {
+            console.log(userInfo.secret, process.env.SECRET)
             if (result.length > 0) {
                 res.locals.error("username already exists!");
+                res.redirect('back');
+            } else if (userInfo.secret !== process.env.SECRET) {
+                res.locals.error("Hmmm looks like you don't belong here pal!")
                 res.redirect('back');
             } else {
                 user.create(userInfo, (err, result) => {
@@ -56,6 +61,7 @@ exports.submit = (req, res, next) => {
             }
         })
     } else {
+        console.log(req.body.user.name)
         let errs = errors.mapped();
         for (let key in errs) {
             let values = errs[key];

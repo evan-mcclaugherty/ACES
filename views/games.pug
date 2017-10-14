@@ -1,0 +1,8 @@
+extends layout
+block content
+  h1: a(href="/addGame") Add a Game  
+  div.games
+    each game in games
+      section
+        h2 #{game.title}
+        img(src=game.photo, alt=game.title)

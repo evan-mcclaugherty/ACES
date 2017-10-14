@@ -1,0 +1,17 @@
+extends layout
+block content
+  form(id="form" action="/addGame" method="post")
+      fieldset
+          legend Create a Game
+          include messages.pug
+          p
+              label(for="title")
+              input(type="text" id="title" name="game[title]" required placeholder="Title" value="Fun Game")
+          p
+              label(for="photo") Snap A Pic!
+              input(type="file", accept="image/*" capture="camera" onchange="loadFile(event)" id="photo" required)
+          div#imgDiv
+          input(type="text" id="imgSrc" name="game[src]" hidden)
+          p
+              input(id="submit" type="submit" value="Submit" disabled)
+  script(src="javascripts/photo.js")

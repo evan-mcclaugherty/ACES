@@ -25,7 +25,7 @@ module.exports = {
         password: hash,
         location: user.location,
         extension: user.extension,
-        photo: user.photo,
+        photo: user.src,
         salt: salt
       };
       db.cypher({

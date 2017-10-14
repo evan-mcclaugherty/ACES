@@ -1,0 +1,8 @@
+extends layout
+block content
+  h1 My Profile:
+  p #{user.username}
+  p #{user.name}
+  p #{user.extension}
+  p #{user.location}
+  img(src=user.photo, alt="Profile Image")
