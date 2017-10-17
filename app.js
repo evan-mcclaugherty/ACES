@@ -7,6 +7,7 @@ var cookieParser = require('cookie-parser');
 var cookieSession = require('cookie-session');
 var bodyParser = require('body-parser');
 var cors = require('cors');
+var helmet = require('helmet');
 
 var multer = require('multer');
 let upload = multer({
@@ -32,6 +33,7 @@ var chat = require('./routes/chat');
 var profile = require('./routes/profile');
 
 var app = express();
+app.use(helmet());
 app.use(cors());
 
 var server = require('http').Server(app);
@@ -41,7 +43,6 @@ require('./chat/chatServer').listen(server);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
-// uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 
 app.use(logger('dev'));
@@ -57,7 +58,7 @@ app.use(cookieSession({
   maxAge: 5 * 24 * 60 * 60 * 1000,
   sameSite: 'strict',
   secure: true,
-  domain: 'https://aces-game-hub.herokuapp.com'
+  domain: 'aces-game-hub.herokuapp.com'
 }))
 
 app.use(sassMiddleware({

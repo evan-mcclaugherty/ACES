@@ -28,7 +28,6 @@ module.exports = {
           session.close();
         })
         .catch(function (error) {
-          console.log(error);
           cb(error);
         });
     })

@@ -65,7 +65,6 @@ function addChatMessage(data, options) {
   options = options || {};
   if (typingMessages.length !== 0) {
     options.fade = false;
-    console.log(typingMessages)
     removeNodes(typingMessages);
   }
 
@@ -103,7 +102,6 @@ function addChatTyping(data) {
 function removeChatTyping(data) {
   let msgs = getTypingMessages(data);
   sessionStorage.clear(); 
-  console.log(msgs)
   removeNodes(msgs);
   // .fadeOut(function () {
   //   $(this).remove();
