@@ -30,13 +30,8 @@ exports.submit = (req, res, next) => {
     if (errors.isEmpty()) {
         const userInfo = req.body.user;
         user.verify(userInfo.username, (err, result) => {
-            if (result === undefined) {
-                res.render('error', {
-                    message: "Neo4j server is down, please contact admin (Evan)"
-                });
-            }
             if (result.length === 1) {
-                result = result[0].n.properties;
+                result = result[0]._fields[0].properties;
                 user.authenticate(result.password, userInfo.password, result.salt, (err, isAuth) => {
                     if (isAuth) {
                         req.session.username = userInfo.username;

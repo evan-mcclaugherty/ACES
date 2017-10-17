@@ -3,6 +3,8 @@ const path = require('path');
 const fs = require('fs');
 let tinify = require('tinify');
 tinify.key = process.env.TINIFY;
+const mime = require('mime-types');
+const util = require('util');
 
 require('dotenv').config()
 const {
@@ -42,14 +44,14 @@ exports.submit = (req, res, next) => {
     let fileName = req.file.originalname;
     let ext = fileName.match(/\.\w{3,3}/)[0];
     let photoName = req.body.user.username + ext;
-    let publicPhotoPath = path.normalize(__dirname + '/../public/images/users/' + photoName);
+    let profilePath = path.normalize(__dirname + '/../profile/' + photoName);
     let optimize = new Promise((resolve, reject) => {
         let source = tinify.fromFile(req.file.path);
         let resized = source.resize({
             method: "scale",
-            width: 300
+            width: 200
         })
-        resolve(resized.toFile(publicPhotoPath));
+        resolve(resized.toFile(profilePath));
     });
 
     fs.unlink(req.file.path, (err) => {
@@ -66,24 +68,36 @@ exports.submit = (req, res, next) => {
     });
     if (errors.isEmpty()) {
         let userInfo = req.body.user;
-        userInfo.src = photoName;
         user.verify(userInfo.username, (err, result) => {
-            if (result.length > 0) {
+            if (result.length === 1) {
                 res.locals.error("username already exists!");
                 res.redirect('back');
             } else if (userInfo.secret !== process.env.SECRET) {
                 res.locals.error("Hmmm looks like you don't belong here pal!")
                 res.redirect('back');
             } else {
-                user.create(userInfo, (err, result) => {
-                    req.session.username = userInfo.username;
-                    userInfo = {};
-                    optimize.then(() => res.redirect('/'));
+                optimize.then(() => {
+                    let type = mime.lookup(profilePath);
+                    fs.readFile(profilePath, (err, data) => {
+                        let photo = new Buffer(data).toString('base64');
+                        photo = util.format("data:%s;base64,%s", type, photo);
+                        userInfo.src = photo;
+                        user.create(userInfo, (err, result) => {
+                            req.session.username = userInfo.username;
+                            userInfo = {};
+                            res.redirect('/');
+                        });
+                        fs.unlink(profilePath, (err) => {
+                            if (err) {
+                                next(err);
+                            }
+                        });
+                    });
+
                 });
             }
         })
     } else {
-        console.log(req.body.user.name)
         let errs = errors.mapped();
         for (let key in errs) {
             let values = errs[key];

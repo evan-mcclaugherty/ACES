@@ -1,4 +1,3 @@
-var logs = require('debug')('path');
 module.exports = () => {
   return (req, res, next) => {
     let locals = res.locals;

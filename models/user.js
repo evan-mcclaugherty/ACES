@@ -1,57 +1,63 @@
 const db = require('./db');
+const session = db.session();
 const bcrypt = require('bcrypt');
-const debug = require('debug')('path');
 
-const createUser = [
-  'CREATE (n:User {salt: {salt}, username: {username},name: {name}, password: {password}, location: {location}, extension: {extension},photo: {photo}})',
-  'RETURN n'
-].join('\n');
-
-const deleteUser = [
-  '',
-  ''
-].join('\n');
-
-const verify = [
-  'MATCH (n:User {username: {username}})',
-  'RETURN n'
-].join('\n');
 module.exports = {
   create: function (user, cb) {
     this.hashPassword(user.password, (hash, salt) => {
-      let params = {
-        username: user.username,
-        name: user.name,
-        password: hash,
-        location: user.location,
-        extension: user.extension,
-        photo: user.src,
-        salt: salt
-      };
-      db.cypher({
-        query: createUser,
-        params
-      }, cb);
-      params = {};
-    });
+      session
+        .run(`CREATE (n:User {
+          salt: {salt}, 
+          username: {username},
+          name: {name}, 
+          password: {password},  
+          location: {location}, 
+          extension: {extension},
+          photo: {photo}
+        }) RETURN n`, {
+          username: user.username,
+          name: user.name,
+          password: hash,
+          location: user.location,
+          extension: user.extension,
+          photo: user.src,
+          salt: salt
+        })
+        .then(function (result) {
+          cb(null, result.records[0])
+          session.close();
+        })
+        .catch(function (error) {
+          console.log(error);
+          cb(error);
+        });
+    })
   },
-  delete: (name, cb) => {
-    const params = {
-      name
-    };
-    db.cypher({
-      query: deleteUser,
-      params
-    }, cb)
+  delete: function (name, cb) {
+    session
+      .run('MATCH (n:User {name: {name}}) DELETE n', {
+        name
+      })
+      .then(function (result) {
+        cb(error, result.records[0])
+        session.close();
+      })
+      .catch(function (error) {
+        cb(error);
+      });
   },
-  verify: (username, cb) => {
-    const params = {
-      username
-    }
-    db.cypher({
-      query: verify,
-      params: params,
-    }, cb);
+  verify: function (username, cb) {
+    session
+      .run("MATCH (n:User {username: {username}}) RETURN n", {
+        username
+      })
+      .then(function (result) {
+        cb(null, result.records);
+        session.close();
+      })
+      .catch(function (error) {
+        cb(error);
+      });
   },
   hashPassword: (password, cb) => {
     bcrypt.genSalt(12, (err, salt) => {

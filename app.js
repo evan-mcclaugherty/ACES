@@ -19,7 +19,7 @@ var userMiddleware = require('./middleware/user');
 var auth = require('./middleware/auth');
 
 process.on('uncaughtException', function (e) {
-  console.log(e);
+  console.error(e);
 });
 
 var index = require('./routes/index');

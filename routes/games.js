@@ -4,6 +4,8 @@ let tinify = require('tinify');
 tinify.key = process.env.TINIFY;
 const fs = require('fs');
 const path = require('path');
+const mime = require('mime-types');
+const util = require('util');
 
 const {
   body,
@@ -17,7 +19,7 @@ const {
 exports.get = (req, res, next) => {
   game.getAll((err, results) => {
     results = results.map(result => {
-      return result.n.properties;
+      return result._fields[0].properties;
     })
     res.render('games', {
       games: results
@@ -32,15 +34,14 @@ exports.getaddGame = (req, res, next) => {
 exports.postAddGame = (req, res, next) => {
   let fileName = req.file.originalname;
   let gameInfo = {
-    title: req.body.game.title,
-    src: fileName
+    title: req.body.game.title
   }
-  let publicPhotoPath = path.normalize(__dirname + '/../public/images/games/' + fileName);
+  let publicPhotoPath = path.normalize(__dirname + '/../profile/' + fileName);
   let optimize = new Promise((resolve, reject) => {
     let source = tinify.fromFile(req.file.path);
     let resized = source.resize({
       method: "scale",
-      width: 300
+      width: 200
     })
     resolve(resized.toFile(publicPhotoPath));
   });
@@ -60,9 +61,22 @@ exports.postAddGame = (req, res, next) => {
   if (errors.isEmpty()) {
     game.lookup(gameInfo.title, (err, result) => {
       if (result.length === 0) {
-        game.create(gameInfo, (err, result) => {
-          optimize.then(() => res.redirect('/games'));
-        })
+        optimize.then(() => {
+          let type = mime.lookup(publicPhotoPath);
+          fs.readFile(publicPhotoPath, (err, data) => {
+            let photo = new Buffer(data).toString('base64');
+            photo = util.format("data:%s;base64,%s", type, photo);
+            gameInfo.src = photo;
+            game.create(gameInfo, (err, result) => {
+              res.redirect('/games')
+            });
+          });
+          fs.unlink(publicPhotoPath, (err) => {
+            if (err) {
+              next(err);
+            }
+          });
+        });
       } else {
         res.locals.error("Game title already exists.")
         res.redirect('back');

@@ -32,7 +32,6 @@ function sendMessage() {
   var message = inputMessage.value;
   // Prevent markup from being injected into the message
   message = cleanInput(message);
-  console.log(message);
   // if there is a non-empty message and a socket connection
   if (message && connected) {
     inputMessage.textContent = '';
@@ -43,6 +42,7 @@ function sendMessage() {
     // tell server to execute 'new message' and send along one parameter
     socket.emit('new message', message);
   }
+  inputMessage.value = '';
 }
 
 // Log a message
@@ -53,16 +53,20 @@ function log(message, options) {
   el.appendChild(text);
   addMessageElement(el, options);
 }
-
+function removeNodes(nodes) {
+  nodes.forEach(node => {
+    messages.removeChild(node);
+  })
+}
 // Adds the visual chat message to the message list
 function addChatMessage(data, options) {
   // Don't fade the message in if there is an 'X was typing'
   var typingMessages = getTypingMessages(data);
-  console.log('first', typingMessages)
   options = options || {};
   if (typingMessages.length !== 0) {
     options.fade = false;
-    typingMessages.remove();
+    console.log(typingMessages)
+    removeNodes(typingMessages);
   }
 
   var usernameDiv = document.createElement('span')
@@ -97,8 +101,10 @@ function addChatTyping(data) {
 // Removes the visual chat typing message
 //TODO
 function removeChatTyping(data) {
-  let msgObj = getTypingMessages(data);
+  let msgs = getTypingMessages(data);
   sessionStorage.clear(); 
+  console.log(msgs)
+  removeNodes(msgs);
   // .fadeOut(function () {
   //   $(this).remove();
   // });
@@ -167,11 +173,12 @@ function updateTyping() {
 
 // Gets the 'X is typing' messages of a user
 function getTypingMessages(data) {
-  let typingMessage = document.querySelectorAll('.typing.message');
+  let typingMessage = document.getElementsByClassName('typing message');
   let username = sessionStorage.getItem('username');
   let typingMessageArray = Array.from(typingMessage);
   return typingMessageArray.filter(function (msg) {
-    return username === data.username;
+    let tempName = msg.getElementsByClassName('username');
+    return username === tempName[0].textContent;
   });
 }
 

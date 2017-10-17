@@ -6,19 +6,21 @@ module.exports = () => {
     if (!username) {
       return next();
     } else {
-      user.verify(username, (err, user) => {
+      user.verify(username, (err, record) => {
         if (err) {
           return next(err);
+        } else if (record.length === 0) {
+          next();
         } else {
-          let props = user[0].n.properties;
-          user = {
-            username: props.username,
-            name: props.name,
-            photo: props.photo,
-            extension: props.extension,
-            location: props.location
+          let userData = record[0]._fields[0].properties
+          userData = {
+            username: userData.username,
+            name: userData.name,
+            photo: userData.photo,
+            extension: userData.extension,
+            location: userData.location
           }
-          req.user = res.locals.user = user;
+          req.user = res.locals.user = userData;
           next();
         }
       })
