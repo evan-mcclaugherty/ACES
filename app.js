@@ -57,7 +57,7 @@ app.use(cookieSession({
   maxAge: 5 * 24 * 60 * 60 * 1000,
   sameSite: 'strict',
   secure: true,
-  domain: 'https://git.heroku.com/aces-game-hub.git'
+  domain: 'https://aces-game-hub.herokuapp.com'
 }))
 
 app.use(sassMiddleware({
