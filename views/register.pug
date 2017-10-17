@@ -1,22 +1,22 @@
 extends layout
 block content
     h1 Register Yo'self
-    form(action="/register" method="post")
+    form(action="/register" method="post" enctype="multipart/form-data")
         fieldset
             legend Create a User Profile        
             include messages.pug
             p
                 label(for="username")
-                input(type="text" id="username" name="user[username]" required placeholder="username" value="username")
+                input(type="text" id="username" name="user[username]" required placeholder="username")
             p 
                 label(for="name")
-                input(type="text" id="name" name="user[name]" required value="firstand LastName" placeholder="firstand lastname")
+                input(type="text" id="name" name="user[name]" required placeholder="firstand lastname")
             p
                 label(for="password")
-                input(type="password" id="password" name= "user[password]" required value="fake password" placeholder="password")
+                input(type="password" id="password" name= "user[password]" required placeholder="password")
             p
                 label(for="password2")
-                input(type="password" id="password2" name= "user[password2]" required value="fake password" placeholder="verify password")
+                input(type="password" id="password2" name= "user[password2]" required placeholder="verify password")
             p
                 label(for="location") Select Location
                 select(name="user[location]")
@@ -24,17 +24,15 @@ block content
                     option(value="Richardson, TX") Richardson, TX
             p
                 label(for="extension")
-                input(type="text" id="extension" name= "user[extension]" required value="5273" placeholder="4 digit ext.")
+                input(type="text" id="extension" name= "user[extension]" required placeholder="4 digit ext.")
             p
                 label(for="photo") Take a Selfie!
-                input(type="file", name="user[photo]" accept="image/*" capture="camera" onchange="loadFile(event)")
-            div#imgDiv
-            input(type="text" id="imgSrc" name="user[src]" hidden)
+                input(type="file", name="user[photo]" accept="image/jpeg, image/png" capture="camera" required)
             p 
                 label(for="secret")
                 input(type="password" id="secret" name="user[secret]" required placeholder="Office Secret")
             p
-                input(id="submit" type="submit" value="Submit" disabled)
-    script(src="/javascripts/photo.js")
+                input(id="submit" type="submit" value="Submit")
+    //- script(src="/javascripts/photo2.js")
 
 

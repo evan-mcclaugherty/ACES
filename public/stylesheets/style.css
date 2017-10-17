@@ -358,6 +358,12 @@ main {
       text-align: center;
       flex-basis: 50%; }
 
+.displayNone {
+  display: none; }
+
+.message {
+  transition: color 1s ease-out; }
+
 .error {
   color: red; }
 

@@ -1,4 +1,9 @@
 const user = require('../models/user');
+const path = require('path');
+const fs = require('fs');
+let tinify = require('tinify');
+tinify.key = process.env.TINIFY;
+
 require('dotenv').config()
 const {
     body,
@@ -31,11 +36,28 @@ exports.validate = [
         min: 4,
         max: 4
     }).escape().withMessage('Extension is your 4 digit office extension'),
-
-    body('user[photo]').exists().withMessage('Please upload a photo!')
 ];
 
 exports.submit = (req, res, next) => {
+    let fileName = req.file.originalname;
+    let ext = fileName.match(/\.\w{3,3}/)[0];
+    let photoName = req.body.user.username + ext;
+    let publicPhotoPath = path.normalize(__dirname + '/../public/images/users/' + photoName);
+    let optimize = new Promise((resolve, reject) => {
+        let source = tinify.fromFile(req.file.path);
+        let resized = source.resize({
+            method: "scale",
+            width: 300
+        })
+        resolve(resized.toFile(publicPhotoPath));
+    });
+
+    fs.unlink(req.file.path, (err) => {
+        if (err) {
+            next(err);
+        }
+    });
+
     const errors = validationResult(req).formatWith((error) => {
         return {
             param: error.param,
@@ -44,8 +66,8 @@ exports.submit = (req, res, next) => {
     });
     if (errors.isEmpty()) {
         let userInfo = req.body.user;
+        userInfo.src = photoName;
         user.verify(userInfo.username, (err, result) => {
-            console.log(userInfo.secret, process.env.SECRET)
             if (result.length > 0) {
                 res.locals.error("username already exists!");
                 res.redirect('back');
@@ -56,7 +78,7 @@ exports.submit = (req, res, next) => {
                 user.create(userInfo, (err, result) => {
                     req.session.username = userInfo.username;
                     userInfo = {};
-                    res.redirect('/');
+                    optimize.then(() => res.redirect('/'));
                 });
             }
         })

@@ -1,3 +1,11 @@
 extends layout
 block content
-  p hello chat
+  section(id="chat page")
+    div#chatArea
+      ul#messages
+      input(id="inputMessage" placeholder="Type here...")
+  script(src="/javascripts/socket.io.slim.js")
+  script.
+    let username = '#{user.username}';
+  script
+    include chatClient.js

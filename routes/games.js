@@ -1,4 +1,9 @@
 const game = require('../models/game');
+require('dotenv').config();
+let tinify = require('tinify');
+tinify.key = process.env.TINIFY;
+const fs = require('fs');
+const path = require('path');
 
 const {
   body,
@@ -25,6 +30,27 @@ exports.getaddGame = (req, res, next) => {
 }
 
 exports.postAddGame = (req, res, next) => {
+  let fileName = req.file.originalname;
+  let gameInfo = {
+    title: req.body.game.title,
+    src: fileName
+  }
+  let publicPhotoPath = path.normalize(__dirname + '/../public/images/games/' + fileName);
+  let optimize = new Promise((resolve, reject) => {
+    let source = tinify.fromFile(req.file.path);
+    let resized = source.resize({
+      method: "scale",
+      width: 300
+    })
+    resolve(resized.toFile(publicPhotoPath));
+  });
+
+  fs.unlink(req.file.path, (err) => {
+    if (err) {
+      next(err);
+    }
+  });
+
   const errors = validationResult(req).formatWith((error) => {
     return {
       param: error.param,
@@ -32,11 +58,10 @@ exports.postAddGame = (req, res, next) => {
     }
   });
   if (errors.isEmpty()) {
-    let gameInfo = req.body.game;
     game.lookup(gameInfo.title, (err, result) => {
       if (result.length === 0) {
         game.create(gameInfo, (err, result) => {
-          res.redirect('/games');
+          optimize.then(() => res.redirect('/games'));
         })
       } else {
         res.locals.error("Game title already exists.")

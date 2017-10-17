@@ -6,8 +6,14 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var cookieSession = require('cookie-session');
 var bodyParser = require('body-parser');
-var sassMiddleware = require('node-sass-middleware');
 
+var multer = require('multer');
+let upload = multer({
+  dest: __dirname + '/profile'
+});
+
+
+var sassMiddleware = require('node-sass-middleware');
 var messages = require('./middleware/messages');
 var userMiddleware = require('./middleware/user');
 var auth = require('./middleware/auth');
@@ -26,6 +32,9 @@ var profile = require('./routes/profile');
 
 var app = express();
 
+var server = require('http').Server(app);
+require('./chat/chatServer').listen(server);
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
@@ -41,7 +50,7 @@ app.use(cookieParser());
 
 app.use(cookieSession({
   name: 'session',
-  keys: [process.env.ONE + '', process.env.TWO + '', process.env.THREE + ''],
+  keys: [process.env.ONE, process.env.TWO, process.env.THREE],
   maxAge: 5 * 24 * 60 * 60 * 1000,
   sameSite: 'strict',
   // secure: true, ENABLE LATER
@@ -61,7 +70,7 @@ app.use(userMiddleware());
 
 app.get('/', index);
 app.get('/register', register.form);
-app.post('/register', register.validate, register.submit);
+app.post('/register', upload.single('user[photo]'), register.validate, register.submit);
 app.get('/login', login.form);
 app.post('/login', login.validate, login.submit);
 app.get('/logout', login.logout);
@@ -70,7 +79,7 @@ app.get('/logout', login.logout);
 app.use(auth());
 app.get('/games', games.get);
 app.get('/addGame', games.getaddGame);
-app.post('/addGame', games.validate, games.postAddGame);
+app.post('/addGame', upload.single('game[photo]'), games.validate, games.postAddGame);
 
 app.get('/profile', profile.get);
 app.get('/chat', chat.get);
@@ -93,4 +102,7 @@ app.use(function (err, req, res, next) {
   res.render('error');
 });
 
-module.exports = app;
+module.exports = {
+  app,
+  server
+};
