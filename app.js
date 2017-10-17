@@ -6,6 +6,7 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var cookieSession = require('cookie-session');
 var bodyParser = require('body-parser');
+var cors = require('cors');
 
 var multer = require('multer');
 let upload = multer({
@@ -31,6 +32,7 @@ var chat = require('./routes/chat');
 var profile = require('./routes/profile');
 
 var app = express();
+app.use(cors());
 
 var server = require('http').Server(app);
 require('./chat/chatServer').listen(server);
@@ -41,6 +43,7 @@ app.set('view engine', 'pug');
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
@@ -53,8 +56,8 @@ app.use(cookieSession({
   keys: [process.env.ONE, process.env.TWO, process.env.THREE],
   maxAge: 5 * 24 * 60 * 60 * 1000,
   sameSite: 'strict',
-  // secure: true, ENABLE LATER
-  // domain: www..... SET LATER
+  secure: true,
+  domain: 'https://git.heroku.com/aces-game-hub.git'
 }))
 
 app.use(sassMiddleware({
