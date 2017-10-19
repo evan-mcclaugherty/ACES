@@ -6,6 +6,10 @@ let h2Title = document.getElementById('title');
 let joinBtn = document.getElementById('join');
 let leaveBtn = document.getElementById('leave');
 let playerList = document.getElementById('playerList');
+let form = document.getElementById('form');
+let playerArray = [];
+let request;
+let winnerDiv = document.getElementById('winner');
 
 
 socket.emit('isStarted', title);
@@ -21,6 +25,7 @@ socket.on('isStarted', gameInfo => {
 });
 
 socket.on('playerList', list => {
+  playerArray = list;
   updatePlayerList(list);
 });
 
@@ -38,7 +43,7 @@ function updatePlayerList(players) {
     addTextNode(td1, player);
 
     let td2 = document.createElement('td');
-    td2.innerHTML = `<input type="radio" name="winner" value="${player}" />`;
+    td2.innerHTML = `<input type="radio" name="winner" value="${player}" required />`;
     tr.appendChild(td1);
     tr.appendChild(td2);
     playerList.appendChild(tr);
@@ -101,10 +106,42 @@ function leaveGame() {
     user,
     title
   }
-  //TODO need to hide/show based on events from clicks... not the clicks...
   socket.emit('removePlayer', info)
 }
 
-function finishGame() {
+form.addEventListener('submit', function (event) {
+  event.preventDefault();
+  let FD = new FormData(form);
+  let winner = Array.from(FD.values())[0]
+  playerArray = playerArray.filter(player => {
+    return winner !== player;
+  });
+  FD.append('losers', playerArray);
+  FD.append('title', title);
+  request = new XMLHttpRequest();
+  request.addEventListener('load', (evt) => {
+    socket.emit('endGame', title);
+  });
+  request.open("POST", "http://localhost:3000/games/winner");
+  if (playerArray.length !== 0) {
+    request.send(FD);
+  }
+});
 
-}
+socket.on('gameEnded', (endedTitle) => {
+  if (endedTitle === title) {
+    gameDoesntExist();
+    let gameResults = JSON.parse(request.response);
+    gameResults.forEach(person => {
+      let p = document.createElement('p');
+      if (person.type === 'WON') {
+        addTextNode(p, `Congratulations ${person.username}, you won! You have won a total of ${person.times} times!`)
+      } else {
+        addTextNode(p, `Wow you suck ${person.username}! You have lost this game ${person.times} times! #justquit`)
+      }
+      winnerDiv.appendChild(p);
+    });
+    winnerDiv.style.display = 'block';
+  }
+  request = null;
+});

@@ -16,7 +16,7 @@ const schema = Object.freeze({
   relationship: Object.freeze({
     Likes: 'LIKES',
     Owns: 'OWN',
-    Played: 'PLAYED',
+    Lost: 'LOST',
     Won: 'WON'
   }),
 });

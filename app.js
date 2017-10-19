@@ -88,6 +88,7 @@ app.post('/addGame', upload.single('game[photo]'), games.validate, games.postAdd
 app.post('/addLike/:title', games.addLike);
 app.post('/removeLike/:title', games.removeLike);
 app.get('/games/:title', games.singleGame);
+app.post('/games/winner', upload.array(), games.winner);
 
 app.get('/users', users.get);
 

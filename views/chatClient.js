@@ -75,9 +75,6 @@ function removeNodes(nodes) {
 }
 // Adds the visual chat message to the message list
 function addChatMessage(data, options) {
-  console.log(data);
-  // title owner players
-  // Don't fade the message in if there is an 'X was typing'
   var typingMessages = getTypingMessages(data);
   options = options || {};
   if (typingMessages.length !== 0) {

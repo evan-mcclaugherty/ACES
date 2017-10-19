@@ -39,6 +39,10 @@ module.exports.listen = (server) => {
       socket.broadcast.emit('gameStarting', io[info.title]);
     });
 
+    socket.on('endGame', function (title) {
+      delete io[title];
+      io.emit('gameEnded', title);
+    });
     socket.on('isStarted', function (title) {
       let gameData = io[title];
       if (gameData) {

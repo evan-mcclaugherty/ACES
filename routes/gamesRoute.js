@@ -17,25 +17,104 @@ const {
   matchedData,
 } = require('express-validator/filter')
 
-exports.get = (req, res, next) => {
-  game.getNonFavGames(req.session.username, (err, results) => {
-    results = results.map(result => {
-      return result._fields[0].properties;
-    })
-    res.render('games', {
-      games: results
+exports.winner = (req, res, next) => {
+  let won = schema.relationship.Won;
+  let lost = schema.relationship.Lost;
+  let winner = req.body.winner;
+  let losers = req.body.losers;
+  losers = losers.split(',');
+  let title = req.body.title;
+
+  let promiseArr = losers.map(loser => {
+    return new Promise((resolve, reject) => {
+      game.addRelationship({
+        username: loser,
+        title,
+        relationship: lost
+      }).then(result => {
+        let data = result.records[0]._fields;
+        resolve({
+          username: data[0],
+          type: data[1].type,
+          times: data[2].low
+        })
+      });
     });
   });
+  promiseArr.push(
+    new Promise((resolve, reject) => {
+      game.addRelationship({
+        username: winner,
+        title,
+        relationship: won
+      }).then(result => {
+        let data = result.records[0]._fields;
+        resolve({
+          username: data[0],
+          type: data[1].type,
+          times: data[2].low
+        });
+      });
+    })
+  )
+  Promise.all(promiseArr)
+    .then(results => {
+      res.json(results);
+    })
+    .catch(err => next(err));
+}
+
+exports.get = (req, res, next) => {
+  game.getAllGames()
+    .then(results => {
+      results = results.map(result => {
+        return result._fields[0].properties;
+      });
+      res.render('games', {
+        games: results
+      });
+    })
+    .catch(err => next(err));
 }
 
 exports.singleGame = (req, res, next) => {
-  game.singleGame(req.params.title)
-    .then(game => {
+  let promiseArr = [];
+  promiseArr.push(
+    new Promise((resolve, reject) => {
+      game.singleGame(req.params.title)
+        .then(records => {
+          records = records.map(ea => {
+            return ea.get('game').properties
+          });
+          resolve(records[0]);
+        });
+    })
+  );
+  promiseArr.push(
+    new Promise((resolve, reject) => {
+      game.singleGameWins(req.params.title)
+        .then(records => {
+          records = records.map(ea => {
+            return {
+              username: ea.get('username'),
+              wins: ea.get('wins').low
+            }
+          });
+          console.log(records);
+          resolve(records);
+        });
+    })
+  );
+  Promise.all(promiseArr)
+    .then(results => {
       res.render('singleGame', {
-        game
+        game: results[0],
+        winners: results[1]
       });
     })
-    .catch(error => next(error));
+    .catch(err => {
+      next(err);
+    })
 }
 
 exports.getaddGame = (req, res, next) => {

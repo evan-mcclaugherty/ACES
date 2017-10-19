@@ -8,12 +8,21 @@ module.exports = {
   singleGame: function (title) {
     return session
       .run(`
-        MATCH (n:Game {title: '${title}'}) RETURN n
+        MATCH (n:Game {title: '${title}'}) RETURN n as game
       `)
       .then(result => {
-        result = result.records[0]._fields[0].properties;
         session.close();
-        return result;
+        return result.records;
+      });
+  },
+  singleGameWins: function (title) {
+    return session
+      .run(`
+        match (g:Game)-[r:WON]-(u) where g.title = '${title}' return r.times as wins, u.username as username order by r.times desc
+      `)
+      .then(result => {
+        session.close();
+        return result.records;
       });
   },
   getFavGames: function (obj) {
@@ -42,17 +51,32 @@ module.exports = {
       })
   },
   addRelationship: function (obj) {
-    return session
-      .run(`
-        MATCH (a:User),(b:Game)
-        WHERE a.username = '${obj.username}' AND b.title = '${obj.title}'
-        CREATE UNIQUE (a)-[r:${obj.relationship}]->(b)
-        RETURN r
+    if (obj.relationship === 'LIKES') {
+      return session
+        .run(`
+          MATCH (a:User),(b:Game)
+          WHERE a.username = '${obj.username}' AND b.title = '${obj.title}'
+          CREATE UNIQUE (a)-[r:${obj.relationship}]->(b)
+          RETURN r
       `)
-      .then(result => {
-        session.close();
-        return result;
-      })
+        .then(result => {
+          session.close();
+          return result;
+        });
+    } else {
+      return session
+        .run(`
+          MATCH (a:User {username: '${obj.username}'}),(b:Game {title: '${obj.title}'})
+          MERGE (a)-[r:${obj.relationship}]->(b)
+            ON CREATE SET r.times = 1
+            ON MATCH SET r.times = r.times + 1
+            RETURN a.username, r, r.times
+      `)
+        .then(result => {
+          session.close();
+          return result;
+        });
+    }
   },
   create: function (game, cb) {
     session
@@ -80,6 +104,17 @@ module.exports = {
       .catch(function (error) {
         cb(error);
       });
+  },
+  getAllGames: function () {
+    return session
+      .run(`
+        MATCH (g:Game)
+        RETURN g
+      `)
+      .then(result => {
+        session.close();
+        return result.records;
+      })
   },
   getNonFavGames: function (username, cb) {
     let query = `
