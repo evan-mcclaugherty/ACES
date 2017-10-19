@@ -1,4 +1,4 @@
-const db = require('./db');
+const db = require('./db').db;
 const session = db.session();
 const bcrypt = require('bcrypt');
 
@@ -50,6 +50,17 @@ module.exports = {
       .run("MATCH (n:User {username: {username}}) RETURN n", {
         username
       })
+      .then(function (result) {
+        cb(null, result.records);
+        session.close();
+      })
+      .catch(function (error) {
+        cb(error);
+      });
+  },
+  getAll: function (cb) {
+    session
+      .run("MATCH (n:User) return n")
       .then(function (result) {
         cb(null, result.records);
         session.close();

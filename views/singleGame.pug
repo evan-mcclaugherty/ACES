@@ -1,0 +1,27 @@
+extends layout
+block content
+  script(src="/javascripts/socket.io.slim.js")
+  h1= game.title
+  img(src= game.photo, alt= game.title)
+
+  div#nogame
+    button#beginBtn(onclick="startGame()") Begin a Game
+  
+  div#game(hidden)
+    h2#title
+    button#join(onclick="joinGame()") Join This Game
+    button#leave(onclick="leaveGame()" hidden) Leave This Game
+    form(action="/games/finished", method="post")
+      table
+        thead
+          tr
+            th Player
+            th Winner
+        tbody#playerList
+      input(type="submit", value="Select Winner")
+
+  script.
+    let title = '#{game.title}';
+    let user = '#{user.username}';
+  script
+    include singleGame.js

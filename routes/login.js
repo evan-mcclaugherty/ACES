@@ -1,4 +1,4 @@
-const user = require('../models/user');
+const user = require('../models/userModel');
 const debug = require('debug')('path');
 const {
     body,

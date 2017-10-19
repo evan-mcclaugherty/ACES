@@ -27,8 +27,8 @@ process.on('uncaughtException', function (e) {
 var index = require('./routes/index');
 var register = require('./routes/register');
 var login = require('./routes/login');
-var users = require('./routes/users');
-var games = require('./routes/games');
+var users = require('./routes/usersRoute');
+var games = require('./routes/gamesRoute');
 var chat = require('./routes/chat');
 var profile = require('./routes/profile');
 
@@ -58,14 +58,14 @@ app.use(cookieSession({
   keys: [process.env.ONE, process.env.TWO, process.env.THREE],
   maxAge: 5 * 24 * 60 * 60 * 1000,
   sameSite: 'strict',
-  secure: true,
-  domain: 'aces-game-hub.herokuapp.com'
-}))
+  // secure: true,
+  // domain: 'aces-game-hub.herokuapp.com'
+}));
 
 app.use(sassMiddleware({
   src: path.join(__dirname, 'public'),
   dest: path.join(__dirname, 'public'),
-  indentedSyntax: true, // true = .sass and false = .scss
+  indentedSyntax: true,
   sourceMap: true
 }));
 app.use(express.static(path.join(__dirname, 'public')));
@@ -85,6 +85,11 @@ app.use(auth());
 app.get('/games', games.get);
 app.get('/addGame', games.getaddGame);
 app.post('/addGame', upload.single('game[photo]'), games.validate, games.postAddGame);
+app.post('/addLike/:title', games.addLike);
+app.post('/removeLike/:title', games.removeLike);
+app.get('/games/:title', games.singleGame);
+
+app.get('/users', users.get);
 
 app.get('/profile', profile.get);
 app.get('/chat', chat.get);

@@ -1,0 +1,7 @@
+extends layout
+block content
+  div.users
+    each user in users
+      section
+        h2 #{user.username}
+        img(src=user.photo, alt=user.name)

@@ -1,3 +1,19 @@
+if (!("Notification" in window)) {
+  alert("Booo! This browser won't notify you when a game is starting :( #sadPanda");
+} else {
+  if (Notification.permission !== "granted") {
+    Notification.requestPermission(function (permission) {
+      if (permission === "granted") {
+        let options = {
+          body: "You will see this when someone wnats to start a new game!"
+        }
+        var notification = new Notification("ACES Game Hub", options);
+      } else {
+        alert("Without notifcations you won't be able to know when someone starts a game!")
+      }
+    });
+  }
+}
 let chatPage = document.getElementById('chat page');
 let messages = document.getElementById('messages');
 let inputMessage = document.getElementById('inputMessage');
@@ -34,9 +50,7 @@ function sendMessage() {
   message = cleanInput(message);
   // if there is a non-empty message and a socket connection
   if (message && connected) {
-    inputMessage.textContent = '';
-    addChatMessage({
-      username,
+    inputMessage.textContent = ''; addChatMessage({ username,
       message
     });
     // tell server to execute 'new message' and send along one parameter
@@ -53,6 +67,7 @@ function log(message, options) {
   el.appendChild(text);
   addMessageElement(el, options);
 }
+
 function removeNodes(nodes) {
   nodes.forEach(node => {
     messages.removeChild(node);
@@ -60,6 +75,8 @@ function removeNodes(nodes) {
 }
 // Adds the visual chat message to the message list
 function addChatMessage(data, options) {
+  console.log(data);
+  // title owner players
   // Don't fade the message in if there is an 'X was typing'
   var typingMessages = getTypingMessages(data);
   options = options || {};
@@ -69,16 +86,25 @@ function addChatMessage(data, options) {
   }
 
   var usernameDiv = document.createElement('span')
+  let messageDiv = document.createElement('li');
   usernameDiv.classList.add('username');
   usernameDiv.textContent = data.username;
-  usernameDiv.style.cssText = `color: ${getUsernameColor(data.username)}`;
+  usernameDiv.style.cssText = `color: ${getUsernameColor(data.owner)}`;
 
   let messageBodyDiv = document.createElement('span');
   messageBodyDiv.classList.add('messageBody');
-  messageBodyDiv.textContent = data.message;
+  if (data.title) {
+    messageDiv.classList.add('newgame');
+    let anchor = document.createElement('a');
+    anchor.setAttribute('href', '/games/' + data.title);
+    let message = document.createTextNode(`I am starting a new game, "${data.title}", click to join!`) 
+    anchor.appendChild(message);
+    messageBodyDiv.appendChild(anchor)
+  } else {
+    messageBodyDiv.textContent = data.message;
+  }
 
-  
-  let messageDiv = document.createElement('li');
+
   messageDiv.classList.add('message')
   if (data.typing) {
     messageDiv.classList.add('typing');
@@ -101,7 +127,7 @@ function addChatTyping(data) {
 //TODO
 function removeChatTyping(data) {
   let msgs = getTypingMessages(data);
-  sessionStorage.clear(); 
+  sessionStorage.clear();
   removeNodes(msgs);
   // .fadeOut(function () {
   //   $(this).remove();
@@ -224,7 +250,13 @@ inputMessage.click(function () {
 });
 
 // Socket events
-
+socket.on('gameStarting', function (data) {
+  addChatMessage(data);
+  let n = new Notification('Game is starting!', {
+    body: "Check the chat to join",
+    requireInteraction: true
+  })
+});
 // Whenever the server emits 'login', log the login message
 socket.on('login', function (data) {
   connected = true;

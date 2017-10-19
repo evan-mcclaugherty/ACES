@@ -1,4 +1,5 @@
-const game = require('../models/game');
+const game = require('../models/gameModel');
+const schema = require('../models/db').schema;
 require('dotenv').config();
 let tinify = require('tinify');
 tinify.key = process.env.TINIFY;
@@ -17,7 +18,7 @@ const {
 } = require('express-validator/filter')
 
 exports.get = (req, res, next) => {
-  game.getAll((err, results) => {
+  game.getNonFavGames(req.session.username, (err, results) => {
     results = results.map(result => {
       return result._fields[0].properties;
     })
@@ -25,6 +26,16 @@ exports.get = (req, res, next) => {
       games: results
     });
   });
+}
+
+exports.singleGame = (req, res, next) => {
+  game.singleGame(req.params.title)
+    .then(game => {
+      res.render('singleGame', {
+        game
+      });
+    })
+    .catch(error => next(error));
 }
 
 exports.getaddGame = (req, res, next) => {
@@ -92,6 +103,35 @@ exports.postAddGame = (req, res, next) => {
   }
 }
 
+exports.addLike = function (req, res, next) {
+  let obj = {
+    username: req.session.username,
+    title: req.params.title,
+    relationship: schema.relationship.Likes
+  }
+  game.addRelationship(obj)
+    .then(result => {
+      res.redirect('back');
+    })
+    .catch(error => {
+      next(error);
+    });
+}
+
+exports.removeLike = function (req, res, next) {
+  let obj = {
+    username: req.session.username,
+    title: req.params.title,
+    relationship: schema.relationship.Likes
+  }
+  game.deleteRelationship(obj)
+    .then(result => {
+      res.redirect('back');
+    })
+    .catch(error => {
+      next(error);
+    });
+}
 exports.validate = [
   body('game[title]').exists().escape().trim().matches(/[\w ]/g).withMessage("Only letters and spaces please."),
 ];

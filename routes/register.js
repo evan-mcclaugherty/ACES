@@ -1,4 +1,4 @@
-const user = require('../models/user');
+const user = require('../models/userModel');
 const path = require('path');
 const fs = require('fs');
 let tinify = require('tinify');

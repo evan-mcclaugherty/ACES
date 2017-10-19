@@ -6,3 +6,12 @@ block content
   p #{user.extension}
   p #{user.location}
   img(src=user.photo, alt="Profile Image")
+
+  h2 Favorite Games
+  each fav in favorite
+    section
+      h3=fav.title
+      img(src=fav.photo, alt=fav.title)
+      form(id="form" action="/removeLike/" + fav.title method="post")
+        p
+          input(id="submit" type="submit" value="Remove From Favorites")

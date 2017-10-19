@@ -4,5 +4,10 @@ block content
   div.games
     each game in games
       section
-        h2 #{game.title}
-        img(src=game.photo, alt=game.title)
+        a(href="/games/" + game.title)
+          div.gameInfo
+            h2 #{game.title}
+            img(src=game.photo, alt=game.title)
+        form(id="form" action="/addLike/" + game.title method="post")
+          p
+            input(id="submit" type="submit" value="Add To Favorites")
