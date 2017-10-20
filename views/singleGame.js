@@ -122,7 +122,7 @@ function updatePlayerList(players) {
     addTextNode(td1, player);
 
     var td2 = document.createElement('td');
-    td2.innerHTML = '<input type="radio" name="winner" value="' + player + '" required />';
+    td2.innerHTML = '<input type="radio" class="radio" name="winner" value="' + player + '" required />';
     tr.appendChild(td1);
     tr.appendChild(td2);
     playerList.appendChild(tr);
@@ -195,7 +195,11 @@ function leaveGame() {
 form.addEventListener('submit', function (event) {
   event.preventDefault();
   var FD = new FormData(form);
-  var winner = aFrom(FD.values())[0];
+  let nodes = document.getElementsByClassName('radio');
+  let checked = [].filter.call(nodes, function(e) {
+    return e.checked;
+  })[0];
+  var winner = checked.value;
   playerArray = playerArray.filter(function (player) {
     return winner !== player;
   });
