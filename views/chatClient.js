@@ -71,7 +71,7 @@ function log(message, options) {
 }
 
 function removeNodes(nodes) {
-  nodes.forEach(node => {
+  nodes.forEach(function (node) {
     messages.removeChild(node);
   })
 }
