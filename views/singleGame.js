@@ -13,7 +13,7 @@ let winnerDiv = document.getElementById('winner');
 
 socket.emit('isStarted', title);
 
-socket.on('isStarted', function(gameInfo) {
+socket.on('isStarted', function (gameInfo) {
   if (gameInfo) {
     gameExists();
     updatePlayerList(gameInfo.players);
@@ -23,7 +23,7 @@ socket.on('isStarted', function(gameInfo) {
   }
 });
 
-socket.on('playerList', function(list) {
+socket.on('playerList', function (list) {
   socket.emit('isStarted', title);
   playerArray = list;
   updatePlayerList(list);
@@ -43,7 +43,7 @@ function updatePlayerList(players) {
     addTextNode(td1, player);
 
     let td2 = document.createElement('td');
-    td2.innerHTML = `<input type="radio" name="winner" value="${player}" required />`;
+    td2.innerHTML = "<input type='radio' name='winner' value='" + player + "' required />";
     tr.appendChild(td1);
     tr.appendChild(td2);
     playerList.appendChild(tr);
@@ -71,7 +71,7 @@ function gameDoesntExist() {
 
 function render(gameInfo) {
   h2Title.innerHTML = '';
-  addTextNode(h2Title, `Join ${gameInfo.owner}'s game!`);
+  addTextNode(h2Title, "Join " + gameInfo.owner + "'s game!");
 }
 
 function startGame() {
@@ -139,17 +139,18 @@ socket.on('winnerDiv', function f_winnerDiv(gameResults) {
   gameResults.forEach(function (person) {
     let p = document.createElement('p');
     if (person.type === 'WON') {
-      addTextNode(p, `Congratulations ${person.username}, you won! You have won a total of ${person.times} times!`)
+      addTextNode(p, "Congratulations " + person.username + ", you won! You have won a total of ${person.times} times!")
     } else {
-      addTextNode(p, `Wow you suck ${person.username}! You have lost this game ${person.times} times! #justquit`)
+      addTextNode(p, "Wow you suck " + person.username + "! You have lost this game " + person.times + " times! #justquit")
     }
     winnerDiv.appendChild(p);
   });
 })
+
 function endGame() {
   socket.emit('endGame', title);
 }
-socket.on('gameEnded', function(endedTitle) {
+socket.on('gameEnded', function (endedTitle) {
   if (endedTitle === title) {
     gameDoesntExist();
     winnerDiv.style.display = 'block';

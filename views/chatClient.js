@@ -89,7 +89,8 @@ function addChatMessage(data, options) {
   usernameDiv.classList.add('username');
   usernameDiv.textContent = data.username;
 
-  usernameDiv.style.cssText = `color: ${getUsernameColor(data.username || data.owner)}`;
+  // usernameDiv.style.cssText = `color: ${getUsernameColor(data.username || data.owner)}`;
+  usernameDiv.style.cssText = "color: " + getUsernameColor(data.username || data.owner);
 
   let messageBodyDiv = document.createElement('span');
   messageBodyDiv.classList.add('messageBody');
@@ -97,7 +98,7 @@ function addChatMessage(data, options) {
     messageDiv.classList.add('newgame');
     let anchor = document.createElement('a');
     anchor.setAttribute('href', '/games/' + data.title);
-    let message = document.createTextNode(`I am starting a new game, "${data.title}", click to join!`)
+    let message = document.createTextNode("I am starting a new game, '" + data.title + "', click to join!");
     anchor.appendChild(message);
     messageBodyDiv.appendChild(anchor)
   } else {
