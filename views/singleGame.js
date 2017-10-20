@@ -196,8 +196,8 @@ form.addEventListener('submit', function (event) {
   playerArray = playerArray.filter(function (player) {
     return winner !== player;
   });
-  FD.append('losers', playerArray);
-  FD.append('title', title);
+  FD.appendChild('losers', playerArray);
+  FD.appendChild('title', title);
   let request = new XMLHttpRequest();
   request.addEventListener('load', function (evt) {
     socket.emit('endGame', title);

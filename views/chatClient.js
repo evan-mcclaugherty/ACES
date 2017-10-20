@@ -244,7 +244,7 @@ function addMessageElement(el, options) {
     var temp = messages.firstChild;
     messages.insertBefore(el, temp);
   } else {
-    messages.append(el);
+    messages.appendChild(el);
   }
   messages.firstChild.scrollTop = messages.firstChild.scrollHeight;
 }
