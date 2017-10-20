@@ -13,7 +13,7 @@ let winnerDiv = document.getElementById('winner');
 
 socket.emit('isStarted', title);
 
-socket.on('isStarted', gameInfo => {
+socket.on('isStarted', function(gameInfo) {
   if (gameInfo) {
     gameExists();
     updatePlayerList(gameInfo.players);
@@ -23,7 +23,7 @@ socket.on('isStarted', gameInfo => {
   }
 });
 
-socket.on('playerList', list => {
+socket.on('playerList', function(list) {
   socket.emit('isStarted', title);
   playerArray = list;
   updatePlayerList(list);
@@ -33,7 +33,7 @@ function updatePlayerList(players) {
   let inList = false;
   playerList.innerHTML = '';
 
-  players.forEach(player => {
+  players.forEach(function (player) {
     if (player === user) {
       inList = true;
     }
@@ -116,13 +116,13 @@ form.addEventListener('submit', function (event) {
   event.preventDefault();
   let FD = new FormData(form);
   let winner = Array.from(FD.values())[0]
-  playerArray = playerArray.filter(player => {
+  playerArray = playerArray.filter(function (player) {
     return winner !== player;
   });
   FD.append('losers', playerArray);
   FD.append('title', title);
   let request = new XMLHttpRequest();
-  request.addEventListener('load', (evt) => {
+  request.addEventListener('load', function (evt) {
     socket.emit('endGame', title);
     let gameResults = JSON.parse(request.response);
     socket.emit('winnerDiv', gameResults); // TODO
@@ -136,7 +136,7 @@ form.addEventListener('submit', function (event) {
 socket.on('winnerDiv', function f_winnerDiv(gameResults) {
   winnerDiv.innerHTML = '';
   winnerDiv.style.display = 'block';
-  gameResults.forEach(person => {
+  gameResults.forEach(function (person) {
     let p = document.createElement('p');
     if (person.type === 'WON') {
       addTextNode(p, `Congratulations ${person.username}, you won! You have won a total of ${person.times} times!`)
@@ -149,7 +149,7 @@ socket.on('winnerDiv', function f_winnerDiv(gameResults) {
 function endGame() {
   socket.emit('endGame', title);
 }
-socket.on('gameEnded', (endedTitle) => {
+socket.on('gameEnded', function(endedTitle) {
   if (endedTitle === title) {
     gameDoesntExist();
     winnerDiv.style.display = 'block';
