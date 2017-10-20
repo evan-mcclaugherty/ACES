@@ -50,8 +50,10 @@ function sendMessage() {
   message = cleanInput(message);
   // if there is a non-empty message and a socket connection
   if (message && connected) {
-    inputMessage.textContent = ''; addChatMessage({ username,
-      message
+    inputMessage.textContent = '';
+    addChatMessage({
+      username: username,
+      message: message
     });
     // tell server to execute 'new message' and send along one parameter
     socket.emit('new message', message);
@@ -95,7 +97,7 @@ function addChatMessage(data, options) {
     messageDiv.classList.add('newgame');
     let anchor = document.createElement('a');
     anchor.setAttribute('href', '/games/' + data.title);
-    let message = document.createTextNode(`I am starting a new game, "${data.title}", click to join!`) 
+    let message = document.createTextNode(`I am starting a new game, "${data.title}", click to join!`)
     anchor.appendChild(message);
     messageBodyDiv.appendChild(anchor)
   } else {
