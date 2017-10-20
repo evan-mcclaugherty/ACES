@@ -58,8 +58,8 @@ app.use(cookieSession({
   keys: [process.env.ONE, process.env.TWO, process.env.THREE],
   maxAge: 5 * 24 * 60 * 60 * 1000,
   sameSite: 'strict',
-  secure: true,
-  domain: 'aces-game-hub.herokuapp.com'
+  // secure: true,
+  // domain: 'aces-game-hub.herokuapp.com'
 }));
 
 app.use(sassMiddleware({

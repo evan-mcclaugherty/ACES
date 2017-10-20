@@ -1,3 +1,6 @@
+"use strict";
+
+
 if (!Array.from) {
   Array.from = (function () {
     var toStr = Object.prototype.toString;
@@ -79,37 +82,35 @@ if (!Array.from) {
     };
   }());
 }
+
+
 if (!("Notification" in window)) {
   alert("Booo! This browser won't notify you when a game is starting :( #sadPanda");
 } else {
   if (Notification.permission !== "granted") {
     Notification.requestPermission(function (permission) {
       if (permission === "granted") {
-        let options = {
+        var options = {
           body: "You will see this when someone wnats to start a new game!"
-        }
+        };
         var notification = new Notification("ACES Game Hub", options);
       } else {
-        alert("Without notifcations you won't be able to know when someone starts a game!")
+        alert("Without notifcations you won't be able to know when someone starts a game!");
       }
     });
   }
 }
-let chatPage = document.getElementById('chat page');
-let messages = document.getElementById('messages');
-let inputMessage = document.getElementById('inputMessage');
-let connected = false;
-let typing = false;
-let lastTypingTime;
-let currentInput = inputMessage;
+var chatPage = document.getElementById('chat page');
+var messages = document.getElementById('messages');
+var inputMessage = document.getElementById('inputMessage');
+var connected = false;
+var typing = false;
+var lastTypingTime = void 0;
+var currentInput = inputMessage;
 var TYPING_TIMER_LENGTH = 400; // ms
-var COLORS = [
-  '#e21400', '#91580f', '#f8a700', '#f78b00',
-  '#58dc00', '#287b00', '#a8f07a', '#4ae8c4',
-  '#3b88eb', '#3824aa', '#a700ff', '#d300e7'
-];
+var COLORS = ['#e21400', '#91580f', '#f8a700', '#f78b00', '#58dc00', '#287b00', '#a8f07a', '#4ae8c4', '#3b88eb', '#3824aa', '#a700ff', '#d300e7'];
 
-let socket = io();
+var socket = io();
 
 function addParticipantsMessage(data) {
   var message = '';
@@ -144,9 +145,9 @@ function sendMessage() {
 
 // Log a message
 function log(message, options) {
-  let el = document.createElement('li');
+  var el = document.createElement('li');
   el.classList.add('log');
-  let text = document.createTextNode(message);
+  var text = document.createTextNode(message);
   el.appendChild(text);
   addMessageElement(el, options);
 }
@@ -154,7 +155,7 @@ function log(message, options) {
 function removeNodes(nodes) {
   nodes.forEach(function (node) {
     messages.removeChild(node);
-  })
+  });
 }
 // Adds the visual chat message to the message list
 function addChatMessage(data, options) {
@@ -165,29 +166,27 @@ function addChatMessage(data, options) {
     removeNodes(typingMessages);
   }
 
-  var usernameDiv = document.createElement('span')
-  let messageDiv = document.createElement('li');
+  var usernameDiv = document.createElement('span');
+  var messageDiv = document.createElement('li');
   usernameDiv.classList.add('username');
   usernameDiv.textContent = data.username;
 
-  // usernameDiv.style.cssText = `color: ${getUsernameColor(data.username || data.owner)}`;
   usernameDiv.style.cssText = "color: " + getUsernameColor(data.username || data.owner);
 
-  let messageBodyDiv = document.createElement('span');
+  var messageBodyDiv = document.createElement('span');
   messageBodyDiv.classList.add('messageBody');
   if (data.title) {
     messageDiv.classList.add('newgame');
-    let anchor = document.createElement('a');
+    var anchor = document.createElement('a');
     anchor.setAttribute('href', '/games/' + data.title);
-    let message = document.createTextNode("I am starting a new game, '" + data.title + "', click to join!");
+    var message = document.createTextNode("I am starting a new game, \"" + data.title + "\", click to join!");
     anchor.appendChild(message);
-    messageBodyDiv.appendChild(anchor)
+    messageBodyDiv.appendChild(anchor);
   } else {
     messageBodyDiv.textContent = data.message;
   }
 
-
-  messageDiv.classList.add('message')
+  messageDiv.classList.add('message');
   if (data.typing) {
     messageDiv.classList.add('typing');
   }
@@ -208,7 +207,7 @@ function addChatTyping(data) {
 // Removes the visual chat typing message
 //TODO
 function removeChatTyping(data) {
-  let msgs = getTypingMessages(data);
+  var msgs = getTypingMessages(data);
   sessionStorage.clear();
   removeNodes(msgs);
   // .fadeOut(function () {
@@ -235,14 +234,14 @@ function addMessageElement(el, options) {
 
   // Apply options
   if (options.fade) {
-    let list = el.classList;
+    var list = el.classList;
     list.add('displayNone');
     list.remove('displayNone');
     list.add('fade_in');
   }
   if (options.prepend) {
-    var temp = messages.firstChild;
-    messages.insertBefore(el, temp);
+    let first = messages.firstChild;
+    message.insertBefore(el, first);
   } else {
     messages.appendChild(el);
   }
@@ -251,10 +250,10 @@ function addMessageElement(el, options) {
 
 // Prevents input from having injected markup
 function cleanInput(input) {
-  let div = document.createElement('div');
-  let text = document.createTextNode(input);
+  var div = document.createElement('div');
+  var text = document.createTextNode(input);
   div.appendChild(text);
-  let str = div.textContent;
+  var str = div.textContent;
   return str;
 }
 
@@ -265,10 +264,10 @@ function updateTyping() {
       typing = true;
       socket.emit('typing');
     }
-    lastTypingTime = (new Date()).getTime();
+    lastTypingTime = new Date().getTime();
 
     setTimeout(function () {
-      var typingTimer = (new Date()).getTime();
+      var typingTimer = new Date().getTime();
       var timeDiff = typingTimer - lastTypingTime;
       if (timeDiff >= TYPING_TIMER_LENGTH && typing) {
         socket.emit('stop typing');
@@ -280,11 +279,11 @@ function updateTyping() {
 
 // Gets the 'X is typing' messages of a user
 function getTypingMessages(data) {
-  let typingMessage = document.getElementsByClassName('typing message');
-  let username = sessionStorage.getItem('username');
-  let typingMessageArray = Array.from(typingMessage);
+  var typingMessage = document.getElementsByClassName('typing message');
+  var username = sessionStorage.getItem('username');
+  var typingMessageArray = Array.from(typingMessage);
   return typingMessageArray.filter(function (msg) {
-    let tempName = msg.getElementsByClassName('username');
+    var tempName = msg.getElementsByClassName('username');
     return username === tempName[0].textContent;
   });
 }
@@ -335,11 +334,11 @@ inputMessage.click(function () {
 // Socket events
 socket.on('gameStarting', function (data) {
   addChatMessage(data);
-  if (("Notification" in window)) {
-    let n = new Notification('Game is starting!', {
+  if (!("Notification" in window)) {
+    var n = new Notification('Game is starting!', {
       body: "Check the chat to join",
       requireInteraction: true
-    })
+    });
   }
 });
 // Whenever the server emits 'login', log the login message

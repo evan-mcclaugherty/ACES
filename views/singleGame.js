@@ -1,3 +1,5 @@
+'use strict';
+
 if (!Array.from) {
   Array.from = (function () {
     var toStr = Object.prototype.toString;
@@ -6,8 +8,12 @@ if (!Array.from) {
     };
     var toInteger = function (value) {
       var number = Number(value);
-      if (isNaN(number)) { return 0; }
-      if (number === 0 || !isFinite(number)) { return number; }
+      if (isNaN(number)) {
+        return 0;
+      }
+      if (number === 0 || !isFinite(number)) {
+        return number;
+      }
       return (number > 0 ? 1 : -1) * Math.floor(Math.abs(number));
     };
     var maxSafeInteger = Math.pow(2, 53) - 1;
@@ -17,7 +23,7 @@ if (!Array.from) {
     };
 
     // The length property of the from method is 1.
-    return function from(arrayLike/*, mapFn, thisArg */) {
+    return function from(arrayLike /*, mapFn, thisArg */ ) {
       // 1. Let C be the this value.
       var C = this;
 
@@ -75,18 +81,17 @@ if (!Array.from) {
     };
   }());
 }
-let socket = io();
-let beginBtn = document.getElementById('beginBtn');
-let game = document.getElementById('game');
-let nogame = document.getElementById('nogame');
-let h2Title = document.getElementById('title');
-let joinBtn = document.getElementById('join');
-let leaveBtn = document.getElementById('leave');
-let playerList = document.getElementById('playerList');
-let form = document.getElementById('form');
-let playerArray = [];
-let winnerDiv = document.getElementById('winner');
-
+var socket = io();
+var beginBtn = document.getElementById('beginBtn');
+var game = document.getElementById('game');
+var nogame = document.getElementById('nogame');
+var h2Title = document.getElementById('title');
+var joinBtn = document.getElementById('join');
+var leaveBtn = document.getElementById('leave');
+var playerList = document.getElementById('playerList');
+var form = document.getElementById('form');
+var playerArray = [];
+var winnerDiv = document.getElementById('winner');
 
 socket.emit('isStarted', title);
 
@@ -107,24 +112,24 @@ socket.on('playerList', function (list) {
 });
 
 function updatePlayerList(players) {
-  let inList = false;
+  var inList = false;
   playerList.innerHTML = '';
 
   players.forEach(function (player) {
     if (player === user) {
       inList = true;
     }
-    let tr = document.createElement('tr');
-    tr.classList.add('player')
-    let td1 = document.createElement('td');
+    var tr = document.createElement('tr');
+    tr.classList.add('player');
+    var td1 = document.createElement('td');
     addTextNode(td1, player);
 
-    let td2 = document.createElement('td');
-    td2.innerHTML = "<input type='radio' name='winner' value='" + player + "' required />";
-    tr.appendChild(td1)
+    var td2 = document.createElement('td');
+    td2.innerHTML = '<input type="radio" name="winner" value="' + player + '" required />';
+    tr.appendChild(td1);
     tr.appendChild(td2);
     playerList.appendChild(tr);
-  })
+  });
   if (inList) {
     joinBtn.style.display = 'none';
     leaveBtn.style.display = 'block';
@@ -135,7 +140,7 @@ function updatePlayerList(players) {
 }
 
 function gameExists() {
-  nogame.style.display = "none"
+  nogame.style.display = "none";
   game.style.display = "block";
   winnerDiv.style.display = 'none';
 }
@@ -148,23 +153,23 @@ function gameDoesntExist() {
 
 function render(gameInfo) {
   h2Title.innerHTML = '';
-  addTextNode(h2Title, "Join " + gameInfo.owner + "'s game!");
+  addTextNode(h2Title, 'Join ' + gameInfo.owner + '\'s game!');
 }
 
 function startGame() {
   gameExists();
-  let info = {
+  var info = {
     username: user,
     title: title
-  }
+  };
   socket.emit('startGame', info);
   socket.emit('isStarted', title);
   joinGame();
 }
 
 function createNode(type, text) {
-  let node = document.createElement(type);
-  let nodeText = document.createTextNode(text);
+  var node = document.createElement(type);
+  var nodeText = document.createTextNode(text);
   node.appendChild(nodeText);
   return node;
 }
@@ -174,38 +179,38 @@ function addTextNode(el, text) {
 }
 
 function joinGame() {
-  let info = {
+  var info = {
     user: user,
-    title: user
-  }
+    title: title
+  };
   socket.emit('addPlayer', info);
 }
 
 function leaveGame() {
-  let info = {
+  var info = {
     user: user,
     title: title
-  }
-  socket.emit('removePlayer', info)
+  };
+  socket.emit('removePlayer', info);
 }
 
 form.addEventListener('submit', function (event) {
   event.preventDefault();
-  let FD = new FormData(form);
-  let winner = Array.from(FD.values())[0]
+  var FD = new FormData(form);
+  var winner = Array.from(FD.values())[0];
   playerArray = playerArray.filter(function (player) {
     return winner !== player;
   });
-  FD.appendChild('losers', playerArray);
-  FD.appendChild('title', title);
-  let request = new XMLHttpRequest();
+  FD.append('losers', playerArray);
+  FD.append('title', title);
+  var request = new XMLHttpRequest();
   request.addEventListener('load', function (evt) {
     socket.emit('endGame', title);
-    let gameResults = JSON.parse(request.response);
+    var gameResults = JSON.parse(request.response);
     socket.emit('winnerDiv', gameResults); // TODO
   });
-  request.open("POST", "https://aces-game-hub.herokuapp.com/games/winner");
-  // request.open("POST", "http://localhost:3000/games/winner");
+  // request.open("POST", "https://aces-game-hub.herokuapp.com/games/winner");
+  request.open("POST", "http://localhost:3000/games/winner");
   if (playerArray.length !== 0) {
     request.send(FD);
   }
@@ -214,15 +219,15 @@ socket.on('winnerDiv', function f_winnerDiv(gameResults) {
   winnerDiv.innerHTML = '';
   winnerDiv.style.display = 'block';
   gameResults.forEach(function (person) {
-    let p = document.createElement('p');
+    var p = document.createElement('p');
     if (person.type === 'WON') {
-      addTextNode(p, "Congratulations " + person.username + ", you won! You have won a total of ${person.times} times!")
+      addTextNode(p, 'Congratulations ' + person.username + ', you won! You have won a total of ' + person.times + ' times!');
     } else {
-      addTextNode(p, "Wow you suck " + person.username + "! You have lost this game " + person.times + " times! #justquit")
+      addTextNode(p, 'Wow you suck ' + person.username + '! You have lost this game ' + person.times + ' times! #justquit');
     }
     winnerDiv.appendChild(p);
   });
-})
+});
 
 function endGame() {
   socket.emit('endGame', title);
