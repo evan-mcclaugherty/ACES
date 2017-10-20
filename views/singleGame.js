@@ -209,8 +209,8 @@ form.addEventListener('submit', function (event) {
     var gameResults = JSON.parse(request.response);
     socket.emit('winnerDiv', gameResults); // TODO
   });
-  // request.open("POST", "https://aces-game-hub.herokuapp.com/games/winner");
-  request.open("POST", "http://localhost:3000/games/winner");
+  request.open("POST", "https://aces-game-hub.herokuapp.com/games/winner");
+  // request.open("POST", "http://localhost:3000/games/winner");
   if (playerArray.length !== 0) {
     request.send(FD);
   }
