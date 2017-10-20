@@ -195,9 +195,10 @@ function leaveGame() {
 }
 
 form.addEventListener('submit', function (event) {
+  let from = Array.from;
   event.preventDefault();
   var FD = new FormData(form);
-  var winner = Array.from(FD.values())[0];
+  var winner = from(FD.values())[0];
   playerArray = playerArray.filter(function (player) {
     return winner !== player;
   });
