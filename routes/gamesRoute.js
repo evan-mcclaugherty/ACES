@@ -100,7 +100,6 @@ exports.singleGame = (req, res, next) => {
               wins: ea.get('wins').low
             }
           });
-          console.log(records);
           resolve(records);
         });
     })

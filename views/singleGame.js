@@ -8,7 +8,6 @@ let leaveBtn = document.getElementById('leave');
 let playerList = document.getElementById('playerList');
 let form = document.getElementById('form');
 let playerArray = [];
-let request;
 let winnerDiv = document.getElementById('winner');
 
 
@@ -25,6 +24,7 @@ socket.on('isStarted', gameInfo => {
 });
 
 socket.on('playerList', list => {
+  socket.emit('isStarted', title);
   playerArray = list;
   updatePlayerList(list);
 });
@@ -60,14 +60,17 @@ function updatePlayerList(players) {
 function gameExists() {
   nogame.style.display = "none"
   game.style.display = "block";
+  winnerDiv.style.display = 'none';
 }
 
 function gameDoesntExist() {
   nogame.style.display = "block";
   game.style.display = "none";
+  winnerDiv.style.display = 'block';
 }
 
 function render(gameInfo) {
+  h2Title.innerHTML = '';
   addTextNode(h2Title, `Join ${gameInfo.owner}'s game!`);
 }
 
@@ -98,7 +101,7 @@ function joinGame() {
     user,
     title
   }
-  socket.emit('addPlayer', info)
+  socket.emit('addPlayer', info);
 }
 
 function leaveGame() {
@@ -118,29 +121,36 @@ form.addEventListener('submit', function (event) {
   });
   FD.append('losers', playerArray);
   FD.append('title', title);
-  request = new XMLHttpRequest();
+  let request = new XMLHttpRequest();
   request.addEventListener('load', (evt) => {
     socket.emit('endGame', title);
+    let gameResults = JSON.parse(request.response);
+    socket.emit('winnerDiv', gameResults); // TODO
   });
   request.open("POST", "http://localhost:3000/games/winner");
   if (playerArray.length !== 0) {
     request.send(FD);
   }
 });
-
+socket.on('winnerDiv', function f_winnerDiv(gameResults) {
+  winnerDiv.innerHTML = '';
+  winnerDiv.style.display = 'block';
+  gameResults.forEach(person => {
+    let p = document.createElement('p');
+    if (person.type === 'WON') {
+      addTextNode(p, `Congratulations ${person.username}, you won! You have won a total of ${person.times} times!`)
+    } else {
+      addTextNode(p, `Wow you suck ${person.username}! You have lost this game ${person.times} times! #justquit`)
+    }
+    winnerDiv.appendChild(p);
+  });
+})
+function endGame() {
+  socket.emit('endGame', title);
+}
 socket.on('gameEnded', (endedTitle) => {
   if (endedTitle === title) {
     gameDoesntExist();
-    let gameResults = JSON.parse(request.response);
-    gameResults.forEach(person => {
-      let p = document.createElement('p');
-      if (person.type === 'WON') {
-        addTextNode(p, `Congratulations ${person.username}, you won! You have won a total of ${person.times} times!`)
-      } else {
-        addTextNode(p, `Wow you suck ${person.username}! You have lost this game ${person.times} times! #justquit`)
-      }
-      winnerDiv.appendChild(p);
-    });
     winnerDiv.style.display = 'block';
   }
   request = null;

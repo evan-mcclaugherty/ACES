@@ -15,6 +15,9 @@ module.exports.listen = (server) => {
     });
 
     // BEGIN game
+    socket.on('winnerDiv', function winnerDiv(data) {
+      io.emit('winnerDiv', data);
+    })
     socket.on('addPlayer', function (info) {
       let players = io[info.title].players;
       if (players.indexOf(info.user) === -1) {

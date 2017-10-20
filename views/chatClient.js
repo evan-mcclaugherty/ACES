@@ -86,7 +86,8 @@ function addChatMessage(data, options) {
   let messageDiv = document.createElement('li');
   usernameDiv.classList.add('username');
   usernameDiv.textContent = data.username;
-  usernameDiv.style.cssText = `color: ${getUsernameColor(data.owner)}`;
+
+  usernameDiv.style.cssText = `color: ${getUsernameColor(data.username || data.owner)}`;
 
   let messageBodyDiv = document.createElement('span');
   messageBodyDiv.classList.add('messageBody');

@@ -19,6 +19,7 @@ block content
             th Winner
         tbody#playerList
       input(type="submit", value="Select Winner")
+    button#beginBtn(onclick="endGame()") Close This Game
   div#winner(hidden class="winner")
   script.
     let title = '#{game.title}';
