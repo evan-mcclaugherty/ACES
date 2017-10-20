@@ -241,7 +241,7 @@ function addMessageElement(el, options) {
     list.add('fade_in');
   }
   if (options.prepend) {
-    var temp = messages.firstChild();
+    var temp = messages.firstChild;
     messages.prepend(el);
     messages.insertBefore(el, temp);
   } else {
