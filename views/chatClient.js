@@ -241,7 +241,7 @@ function addMessageElement(el, options) {
   }
   if (options.prepend) {
     let first = messages.firstChild;
-    message.insertBefore(el, first);
+    messages.insertBefore(el, first);
   } else {
     messages.appendChild(el);
   }
