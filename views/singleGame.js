@@ -155,7 +155,7 @@ function startGame() {
   gameExists();
   let info = {
     username: user,
-    title
+    title: title
   }
   socket.emit('startGame', info);
   socket.emit('isStarted', title);
@@ -175,16 +175,16 @@ function addTextNode(el, text) {
 
 function joinGame() {
   let info = {
-    user,
-    title
+    user: user,
+    title: user
   }
   socket.emit('addPlayer', info);
 }
 
 function leaveGame() {
   let info = {
-    user,
-    title
+    user: user,
+    title: title
   }
   socket.emit('removePlayer', info)
 }
