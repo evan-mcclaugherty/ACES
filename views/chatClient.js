@@ -335,10 +335,12 @@ inputMessage.click(function () {
 // Socket events
 socket.on('gameStarting', function (data) {
   addChatMessage(data);
-  let n = new Notification('Game is starting!', {
-    body: "Check the chat to join",
-    requireInteraction: true
-  })
+  if (("Notification" in window)) {
+    let n = new Notification('Game is starting!', {
+      body: "Check the chat to join",
+      requireInteraction: true
+    })
+  }
 });
 // Whenever the server emits 'login', log the login message
 socket.on('login', function (data) {
