@@ -1,17 +1,19 @@
 extends layout
 block content
-  h1 My Profile:
-  p #{user.username}
-  p #{user.name}
-  p #{user.extension}
-  p #{user.location}
-  img(src=user.photo, alt="Profile Image")
+  div#uProfile
+    h1 Profile
+    div(class="pInfo")
+      p #{user.name}
+      p u: #{user.username}
+      p ext: #{user.extension}
+      p #{user.location}
+    img(src=user.photo, alt="Profile Image")
 
-  h2 Favorite Games
-  each fav in favorite
-    section
-      h3=fav.title
-      img(src=fav.photo, alt=fav.title)
-      form(id="form" action="/removeLike/" + fav.title method="post")
-        p
-          input(id="submit" type="submit" value="Remove From Favorites")
+    h2 Favorite Games
+    each fav in favorite
+      section
+        h3=fav.title
+        img(src=fav.photo, alt=fav.title)
+        form(id="form" action="/removeLike/" + fav.title method="post")
+          p
+            input(id="submit" type="submit" value="Remove From Favorites")

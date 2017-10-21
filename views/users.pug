@@ -1,7 +1,8 @@
 extends layout
 block content
-  div.users
+  div#users
     each user in users
       section
-        h2 #{user.username}
         img(src=user.photo, alt=user.name)
+        p #{user.name}
+        p u: #{user.username} @ ext: #{user.extension}

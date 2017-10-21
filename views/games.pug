@@ -1,7 +1,8 @@
 extends layout
 block content
-  h1: a(href="/addGame") Add a Game  
-  div.games
+  div#titlewrap
+    h1#addGame: a(href="/addGame") Add a Game  
+  div#games
     each game in games
       section
         a(href="/games/" + game.title)

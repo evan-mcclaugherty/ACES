@@ -1,14 +1,13 @@
 extends layout
 block content
   form(id="form" action="/addGame" method="post" enctype="multipart/form-data")
-      fieldset
-          legend Create a Game
-          include messages.pug
-          p
-              label(for="title")
-              input(type="text" id="title" name="game[title]" required placeholder="Title")
-          p
-              label(for="photo") Snap A Pic!
-              input(type="file", accept="image/jpeg, image/png" name="game[photo]" capture="camera" id="photo" required)
-          p
-              input(id="submit" type="submit" value="Submit")
+    include messages.pug
+    h1 Add a Game
+    p
+        label(for="title")
+        input(type="text" id="title" name="game[title]" required placeholder="Title")
+    p
+        label(for="photo") Snap A Pic!
+        input(type="file", accept="image/jpeg, image/png" name="game[photo]" capture="camera" id="photo" required)
+    p
+        input(id="submit" type="submit" value="Submit")

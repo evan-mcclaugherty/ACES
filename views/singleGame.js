@@ -196,7 +196,7 @@ form.addEventListener('submit', function (event) {
   event.preventDefault();
   var FD = new FormData(form);
   let nodes = document.getElementsByClassName('radio');
-  let checked = [].filter.call(nodes, function(e) {
+  let checked = [].filter.call(nodes, function (e) {
     return e.checked;
   })[0];
   var winner = checked.value;
@@ -212,7 +212,7 @@ form.addEventListener('submit', function (event) {
     socket.emit('winnerDiv', gameResults); // TODO
   });
   request.open("POST", "https://aces-game-hub.herokuapp.com/games/winner");
-  // request.open("POST", "http://localhost:3000/games/winner"); great.
+  // request.open("POST", "http://localhost:3000/games/winner");
   if (playerArray.length !== 0) {
     request.send(FD);
   }

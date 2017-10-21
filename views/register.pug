@@ -1,37 +1,35 @@
 extends layout
 block content
-    h1 Register Yo'self
+    h1 Create a User
     form(action="/register" method="post" enctype="multipart/form-data")
-        fieldset
-            legend Create a User Profile        
-            include messages.pug
-            p
-                label(for="username")
-                input(type="text" id="username" name="user[username]" required placeholder="username")
-            p 
-                label(for="name")
-                input(type="text" id="name" name="user[name]" required placeholder="firstand lastname" )
-            p
-                label(for="password")
-                input(type="password" id="password" name= "user[password]" required placeholder="password")
-            p
-                label(for="password2")
-                input(type="password" id="password2" name= "user[password2]" required placeholder="verify password")
-            p
-                label(for="location") Select Location
-                select(name="user[location]")
-                    option(value="Aurora, CO") Aurora, CO
-                    option(value="Richardson, TX") Richardson, TX
-            p
-                label(for="extension")
-                input(type="text" id="extension" name= "user[extension]" required placeholder="4 digit ext.")
-            p
-                label(for="photo") Take a Selfie!
-                input(type="file", name="user[photo]" accept="image/jpeg, image/png" capture="camera" required)
-            p 
-                label(for="secret")
-                input(type="password" id="secret" name="user[secret]" required placeholder="Office Secret on White Board")
-            p
-                input(id="submit" type="submit" value="Submit")
+        include messages.pug
+        p
+            label(for="username")
+            input(type="text" id="username" name="user[username]" required placeholder="username")
+        p 
+            label(for="name")
+            input(type="text" id="name" name="user[name]" required placeholder="firstand lastname" )
+        p
+            label(for="password")
+            input(type="password" id="password" name= "user[password]" required placeholder="password")
+        p
+            label(for="password2")
+            input(type="password" id="password2" name= "user[password2]" required placeholder="verify password")
+        p
+            label(for="location") Select Location
+            select(name="user[location]")
+                option(value="Aurora, CO") Aurora, CO
+                option(value="Richardson, TX") Richardson, TX
+        p
+            label(for="extension")
+            input(type="text" id="extension" name= "user[extension]" required placeholder="4 digit ext.")
+        p
+            label(for="photo") Take a Selfie!
+            input(type="file", name="user[photo]" accept="image/jpeg, image/png" capture="camera" required)
+        p 
+            label(for="secret")
+            input(type="password" id="secret" name="user[secret]" required placeholder="Office Secret on White Board")
+        p
+            input(id="submit" type="submit" value="Submit")
 
 
